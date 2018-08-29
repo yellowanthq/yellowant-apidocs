@@ -1,0 +1,75 @@
+post:
+  tags:
+    - Authorization
+  summary: Get User Token
+  x-code-samples:
+    - lang: Python
+      source: |
+        from yellowant import YellowAnt
+
+        code = request.GET.get('code')
+        CLIENT_ID = 'oLuOCDCScer5oi9GBFWrfewei7238fFWef7c0oGNb6g5Q'
+        CLIENT_SECRET = '2m89fjXkTnh87d753x4fobFFwf@3netrcSQWSusqrtRu53s'
+
+        y = YellowAnt(app_key=settings.CLIENT_ID, app_secret=CLIENT_SECRET,
+                          access_token=None,
+                          redirect_uri=REDIRECT_URL)
+        access_token_dict = y.get_access_token(code)
+        access_token = access_token_dict['access_token']
+
+        user_yellowant_object = YellowAnt(access_token=access_token)
+  description: >
+    YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
+    a YellowAnt user’s information through a token issued to your application.
+  parameters:
+    - name: body
+      in: body
+      description: Checkout Page resource
+      required: true
+      schema:
+        $ref: '#/definitions/CheckoutPage'
+  responses:
+    '200':
+      description: Checkout Page was updated
+      headers:
+        Rate-Limit-Limit:
+          description: The number of allowed requests in the current period
+          type: integer
+        Rate-Limit-Remaining:
+          description: The number of remaining requests in the current period
+          type: integer
+        Rate-Limit-Reset:
+          description: >
+            The date in format defined by [RFC
+            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
+
+            when the current period will reset
+          type: string
+      schema:
+        $ref: '#/definitions/CheckoutPage'
+    '201':
+      description: Checkout Page was created
+      headers:
+        Rate-Limit-Limit:
+          description: The number of allowed requests in the current period
+          type: integer
+        Rate-Limit-Remaining:
+          description: The number of remaining requests in the current period
+          type: integer
+        Rate-Limit-Reset:
+          description: >
+            The date in format defined by [RFC
+            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
+
+            when the current period will reset
+          type: string
+      schema:
+        $ref: '#/definitions/CheckoutPage'
+    '401':
+      $ref: '#/responses/AccessForbidden'
+    '404':
+      $ref: '#/responses/NotFound'
+    '422':
+      description: Invalid data was sent
+      schema:
+        $ref: '#/definitions/InvalidError'
