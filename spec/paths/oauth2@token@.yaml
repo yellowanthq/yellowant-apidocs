@@ -20,7 +20,7 @@ post:
         user_yellowant_object = YellowAnt(access_token=access_token)
   description: >
     YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
-    a YellowAnt user’s information through a token issued to your application.
+    a YellowAnt user’s information through a user token.
   parameters:
     - name: body
       in: body
