@@ -1,33 +1,16 @@
 post:
   tags:
-    - Authorization
-  summary: Get User Token
-  x-code-samples:
-    - lang: Python
-      source: |
-        from yellowant import YellowAnt
-
-        code = request.GET.get('code')
-        CLIENT_ID = 'oLuOCDCScer5oi9GBFWrfewei7238fFWef7c0oGNb6g5Q'
-        CLIENT_SECRET = '2m89fjXkTnh87d753x4fobFFwf@3netrcSQWSusqrtRu53s'
-
-        y = YellowAnt(app_key=settings.CLIENT_ID, app_secret=CLIENT_SECRET,
-                          access_token=None,
-                          redirect_uri=REDIRECT_URL)
-        access_token_dict = y.get_access_token(code)
-        access_token = access_token_dict['access_token']
-
-        user_yellowant_object = YellowAnt(access_token=access_token)
+    - Messaging
+  summary: Create a webhook function message
   description: >
     YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
-    a YellowAnt user’s information through a user token.
+    a YellowAnt user’s information through a token issued to your application.
   parameters:
-    - name: client_id
+    - name: body
       in: body
       description: Checkout Page resource
       required: true
       schema:
-        type: integer
         $ref: '#/definitions/CheckoutPage'
   responses:
     '200':

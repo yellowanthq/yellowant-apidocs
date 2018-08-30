@@ -1,0 +1,58 @@
+delete:
+  tags:
+    - Integration
+  summary: Delete a User Integration
+  description: |
+    Delete a Checkout Page.
+  responses:
+    '204':
+      headers:
+        Rate-Limit-Limit:
+          description: The number of allowed requests in the current period
+          type: integer
+        Rate-Limit-Remaining:
+          description: The number of remaining requests in the current period
+          type: integer
+        Rate-Limit-Reset:
+          description: >
+            The date in format defined by [RFC
+            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
+
+            when the current period will reset
+          type: string
+      description: Checkout Page was deleted
+    '401':
+      $ref: '#/responses/AccessForbidden'
+    '404':
+      $ref: '#/responses/NotFound'
+    '409':
+      description: Checkout page cannot be deleted
+patch:
+  tags:
+    - Integration
+  summary: Update a User Integration
+  description: |
+    Delete a Checkout Page.
+  responses:
+    '204':
+      headers:
+        Rate-Limit-Limit:
+          description: The number of allowed requests in the current period
+          type: integer
+        Rate-Limit-Remaining:
+          description: The number of remaining requests in the current period
+          type: integer
+        Rate-Limit-Reset:
+          description: >
+            The date in format defined by [RFC
+            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
+
+            when the current period will reset
+          type: string
+      description: Checkout Page was deleted
+    '401':
+      $ref: '#/responses/AccessForbidden'
+    '404':
+      $ref: '#/responses/NotFound'
+    '409':
+      description: Checkout page cannot be deleted
