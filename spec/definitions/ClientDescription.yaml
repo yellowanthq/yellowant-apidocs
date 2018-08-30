@@ -1,7 +1,7 @@
 type: object
 properties:
   client_id:
-    description: The client Id from your application developer page
+    description: The client Id in your application developer page
     type: string
     example: gdghh
   client_secret:
