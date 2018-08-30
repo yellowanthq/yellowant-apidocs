@@ -1,25 +1,5 @@
 type: object
-required:
-  - message_text
-  - requester_application
 properties:
-  message_text:
-    description: The text of the message
+  status:
+    example: ok
     type: string
-    example: example
-  requester_application:
-    description: >
-      The Id of the user integration to send this message to (that you acquired
-      duringcreate user integrationasuser_integration)
-    type: string
-    example: example
-  attachments:
-    description: The attachments for the message (Optional)
-    type: string
-    example: example
-  data:
-    description: >
-      The data along with the message. The output schema must be defined in
-      developer application page for the webhook function (Optional)
-    type: string
-    example: example

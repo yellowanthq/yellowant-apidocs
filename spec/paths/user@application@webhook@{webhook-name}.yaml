@@ -4,6 +4,28 @@ post:
       in: path
       type: string
       required: true
+    - name: message_text
+      in: query
+      description: The text of the message
+      type: string
+      required: true
+    - name: requester_application
+      in: query
+      description: >
+        The Id of the user integration to send this message to (that you
+        acquired duringcreate user integrationasuser_integration)
+      type: string
+      required: true
+    - name: attachments
+      in: query
+      description: The attachments for the message (Optional)
+      type: string
+    - name: data
+      in: query
+      description: >
+        The data along with the message. The output schema must be defined in
+        developer application page for the webhook function (Optional)
+      type: string
   tags:
     - Messaging
   summary: Create a webhook function message
@@ -11,40 +33,8 @@ post:
     YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
     a YellowAnt user’s information through a token issued to your application.
   responses:
-    '200':
-      description: Checkout Page was updated
-      headers:
-        Rate-Limit-Limit:
-          description: The number of allowed requests in the current period
-          type: integer
-        Rate-Limit-Remaining:
-          description: The number of remaining requests in the current period
-          type: integer
-        Rate-Limit-Reset:
-          description: >
-            The date in format defined by [RFC
-            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
-
-            when the current period will reset
-          type: string
-      schema:
-        $ref: '#/definitions/WebhookMessage'
     '201':
-      description: Checkout Page was created
-      headers:
-        Rate-Limit-Limit:
-          description: The number of allowed requests in the current period
-          type: integer
-        Rate-Limit-Remaining:
-          description: The number of remaining requests in the current period
-          type: integer
-        Rate-Limit-Reset:
-          description: >
-            The date in format defined by [RFC
-            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
-
-            when the current period will reset
-          type: string
+      description: Webhook was created
       schema:
         $ref: '#/definitions/WebhookMessage'
     '401':

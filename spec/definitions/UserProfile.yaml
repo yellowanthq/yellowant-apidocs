@@ -1,0 +1,20 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 11
+  username:
+    type: string
+    example: h74d-r34f-4dsf-2drw-4r2ed
+  firstname:
+    type: string
+    example: Jane
+  lastname:
+    type: string
+    example: Doe
+  is_active:
+    type: boolean
+    example: true
+  email:
+    type: string
+    example: jane_doe@example.com

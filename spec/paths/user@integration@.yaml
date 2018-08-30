@@ -7,37 +7,9 @@ post:
     a YellowAnt user’s information through a token issued to your application.
   responses:
     '200':
-      description: Checkout Page was updated
-      headers:
-        Rate-Limit-Limit:
-          description: The number of allowed requests in the current period
-          type: integer
-        Rate-Limit-Remaining:
-          description: The number of remaining requests in the current period
-          type: integer
-        Rate-Limit-Reset:
-          description: >
-            The date in format defined by [RFC
-            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
-
-            when the current period will reset
-          type: string
+      description: User Integration Created
     '201':
-      description: Checkout Page was created
-      headers:
-        Rate-Limit-Limit:
-          description: The number of allowed requests in the current period
-          type: integer
-        Rate-Limit-Remaining:
-          description: The number of remaining requests in the current period
-          type: integer
-        Rate-Limit-Reset:
-          description: >
-            The date in format defined by [RFC
-            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
-
-            when the current period will reset
-          type: string
+      description: User Integration Created
     '401':
       $ref: '#/responses/AccessForbidden'
     '404':

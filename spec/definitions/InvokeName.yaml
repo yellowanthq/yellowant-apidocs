@@ -1,0 +1,11 @@
+type: object
+properties:
+  application:
+    example: 5
+    type: integer
+  user_invoke_name:
+    example: github_vader
+    type: string
+  user_application:
+    example: 133
+    type: integer

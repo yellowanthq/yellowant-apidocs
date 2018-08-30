@@ -21,41 +21,39 @@ post:
   description: >
     YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
     a YellowAnt user’s information through a user token.
+  parameters:
+    - in: query
+      name: client_id
+      description: The client Id in your application developer page
+      type: string
+      required: true
+    - in: query
+      name: client_secret
+      type: string
+      description: The client secret from your application developer page
+      required: true
+    - in: query
+      name: grant_type
+      type: string
+      description: Set value to ‘authorization_code’
+      required: true
+    - in: query
+      name: redirect_url
+      type: string
+      description: The url to redirect the user after authentication
+      required: true
+    - in: query
+      name: code
+      type: string
+      description: The code obtained from the GET parameter
+      required: true
   responses:
     '200':
-      description: Checkout Page was updated
-      headers:
-        Rate-Limit-Limit:
-          description: The number of allowed requests in the current period
-          type: integer
-        Rate-Limit-Remaining:
-          description: The number of remaining requests in the current period
-          type: integer
-        Rate-Limit-Reset:
-          description: >
-            The date in format defined by [RFC
-            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
-
-            when the current period will reset
-          type: string
+      description: User Authorized
       schema:
         $ref: '#/definitions/ClientDescription'
     '201':
-      description: Checkout Page was created
-      headers:
-        Rate-Limit-Limit:
-          description: The number of allowed requests in the current period
-          type: integer
-        Rate-Limit-Remaining:
-          description: The number of remaining requests in the current period
-          type: integer
-        Rate-Limit-Reset:
-          description: >
-            The date in format defined by [RFC
-            822](https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1)
-
-            when the current period will reset
-          type: string
+      description: User Authorized
       schema:
         $ref: '#/definitions/ClientDescription'
     '401':

@@ -11,8 +11,9 @@ info:
     url: 'https://www.rebilly.com/api/license/'
   termsOfService: 'https://www.rebilly.com/terms/'
   x-logo:
-    url: 'https://rebilly.github.io/RebillyAPI/rb_apiLogo.svg'
-    backgroundColor: '#0033A0'
+    url: >-
+      https://ya-production.s3.amazonaws.com/static/clients/dist/YellowAnt-new.png
+    backgroundColor: '#FFFFFF'
   description: >
     # Introduction
 
@@ -56,12 +57,5 @@ responses:
     description: Resource was not found
     schema:
       $ref: '#/definitions/Error'
-parameters:
-  resourceId:
-    name: id
-    in: path
-    description: The resource identifier string
-    type: string
-    required: true
 host: virtserver.swaggerhub.com
 basePath: /vishwa306/YellowAnt-Api/1.0.0

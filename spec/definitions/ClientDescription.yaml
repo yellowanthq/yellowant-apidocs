@@ -1,22 +1,11 @@
 type: object
 properties:
-  client_id:
-    description: The client Id in your application developer page
+  access_token:
     type: string
-    example: 55hh
-  client_secret:
+    example: B69$9v7v68ydepiuXheTodDWDc33rVYXEviT4d3d
+  expires:
     type: string
-    description: The client secret from your application developer page
-    example: example
-  grant_type:
+    example: 31536000
+  refresh_token:
     type: string
-    description: Set value to ‘authorization_code’
-    example: example
-  redirect_url:
-    type: string
-    description: The url to redirect the user after authentication
-    example: www.example.com
-  code:
-    type: string
-    description: The code obtained from the GET parameter
-    example: example
+    example: ei7238fFWef7c0oGNb6gd34n087xb390yx8b4x8

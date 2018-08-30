@@ -4,9 +4,9 @@ properties:
     description: Background color for the section in hexadecimal format.
     type: string
     maxLength: 6
-    default: "ffffff"
+    default: ffffff
   color:
     description: Font color for the section in hexadecimal format.
     type: string
     maxLength: 6
-    default: "cccccc"
+    default: 37474F
