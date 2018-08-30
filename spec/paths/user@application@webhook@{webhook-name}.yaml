@@ -1,14 +1,15 @@
 post:
+  parameters:
+    - name: webhook-name
+      in: path
+      type: string
+      required: true
   tags:
     - Messaging
   summary: Create a webhook function message
   description: >
     YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
     a YellowAnt user’s information through a token issued to your application.
-  parameters:
-    - name: webhook-name
-      in: path
-      type: string
   responses:
     '200':
       description: Checkout Page was updated

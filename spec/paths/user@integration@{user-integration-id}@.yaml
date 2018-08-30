@@ -3,7 +3,12 @@ delete:
     - Integration
   summary: Delete a User Integration
   description: |
-    Delete a Checkout Page.
+    Delete a user integration.
+  parameters:
+    - name: user-integration-id
+      in: path
+      type: string
+      required: true
   responses:
     '204':
       headers:
@@ -31,8 +36,13 @@ patch:
   tags:
     - Integration
   summary: Update a User Integration
+  parameters:
+    - name: user-integration-id
+      in: path
+      type: string
+      required: true
   description: |
-    Delete a Checkout Page.
+    Update a user integration.
   responses:
     '204':
       headers:
