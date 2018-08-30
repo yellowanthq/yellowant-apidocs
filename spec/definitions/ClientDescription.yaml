@@ -3,20 +3,20 @@ properties:
   client_id:
     description: The client Id in your application developer page
     type: string
-    example: gdghh
+    example: 55hh
   client_secret:
     type: string
     description: The client secret from your application developer page
-    example: jhjhdsg
+    example: example
   grant_type:
     type: string
     description: Set value to ‘authorization_code’
-    example: hjfhikfj
+    example: example
   redirect_url:
     type: string
     description: The url to redirect the user after authentication
-    example: www.jhjf.com
+    example: www.example.com
   code:
     type: string
     description: The code obtained from the GET parameter
-    example: hugfh
+    example: example

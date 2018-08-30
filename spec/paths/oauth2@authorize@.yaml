@@ -33,8 +33,5 @@ get:
           type: integer
       schema:
         $ref: '#/definitions/ClientDescription'
-        type: array
-        items:
-          $ref: '#/definitions/CheckoutPage'
     '401':
       $ref: '#/responses/AccessForbidden'

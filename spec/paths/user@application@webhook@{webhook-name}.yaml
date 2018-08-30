@@ -6,12 +6,9 @@ post:
     YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
     a YellowAnt user’s information through a token issued to your application.
   parameters:
-    - name: body
-      in: body
-      description: Checkout Page resource
-      required: true
-      schema:
-        $ref: '#/definitions/CheckoutPage'
+    - name: webhook-name
+      in: path
+      type: string
   responses:
     '200':
       description: Checkout Page was updated
@@ -30,7 +27,7 @@ post:
             when the current period will reset
           type: string
       schema:
-        $ref: '#/definitions/CheckoutPage'
+        $ref: '#/definitions/WebhookMessage'
     '201':
       description: Checkout Page was created
       headers:
@@ -48,7 +45,7 @@ post:
             when the current period will reset
           type: string
       schema:
-        $ref: '#/definitions/CheckoutPage'
+        $ref: '#/definitions/WebhookMessage'
     '401':
       $ref: '#/responses/AccessForbidden'
     '404':
