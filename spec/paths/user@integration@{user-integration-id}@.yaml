@@ -47,10 +47,10 @@ patch:
       type: string
       required: true
     - name: user_invoke_id
-      type: string
-      in: query
-      required: true
+      in: body
       description: The new user invoke name for the user application
+      schema:
+        type: string
   description: |
     Update a user integration.
   responses:

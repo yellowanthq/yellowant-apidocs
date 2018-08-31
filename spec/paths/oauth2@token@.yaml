@@ -22,31 +22,10 @@ post:
     YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
     a YellowAnt user’s information through a user token.
   parameters:
-    - in: query
-      name: client_id
-      description: The client Id in your application developer page
-      type: string
-      required: true
-    - in: query
-      name: client_secret
-      type: string
-      description: The client secret from your application developer page
-      required: true
-    - in: query
-      name: grant_type
-      type: string
-      description: Set value to ‘authorization_code’
-      required: true
-    - in: query
-      name: redirect_url
-      type: string
-      description: The url to redirect the user after authentication
-      required: true
-    - in: query
-      name: code
-      type: string
-      description: The code obtained from the GET parameter
-      required: true
+    - in: body
+      name: Client
+      schema:
+        $ref: '#/definitions/ClientInfo'
   responses:
     '200':
       description: User Authorized
