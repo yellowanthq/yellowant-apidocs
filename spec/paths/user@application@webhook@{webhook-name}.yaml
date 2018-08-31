@@ -48,7 +48,7 @@ post:
     - name: webhook message
       in: body
       schema:
-        $ref: '#/definitions/WebhookMessageBody'
+        $ref: '#/definitions/MessageBody'
   tags:
     - Messaging
   summary: Create a webhook function message
@@ -59,7 +59,7 @@ post:
     '201':
       description: Webhook was created
       schema:
-        $ref: '#/definitions/WebhookMessage'
+        $ref: '#/definitions/Message'
     '401':
       $ref: '#/responses/AccessForbidden'
     '404':

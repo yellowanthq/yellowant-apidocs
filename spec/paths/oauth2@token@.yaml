@@ -23,7 +23,7 @@ post:
     a YellowAnt user’s information through a user token.
   parameters:
     - in: body
-      name: Client
+      name: client
       schema:
         $ref: '#/definitions/ClientInfo'
   responses:
