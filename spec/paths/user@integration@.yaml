@@ -5,6 +5,17 @@ post:
   description: >
     YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
     a YellowAnt user’s information through a token issued to your application.
+  x-code-samples:
+    - lang: Python
+      source: >
+        yellowant_user =
+        YellowAnt(access_token='sdfjbr32p89pdgDFF4p27cQd278p2DWcnp497f')
+
+        profile = yellowant_user.create_user_integration()
+
+        user_intergation_id = profile['user_application']
+
+        user_intergation_invoke_name = profile['user_intergation_invoke_name']
   responses:
     '200':
       description: User Integration Created

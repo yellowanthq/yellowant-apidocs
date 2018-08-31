@@ -4,6 +4,15 @@ delete:
   summary: Delete a User Integration
   description: |
     Delete a user integration.
+  x-code-samples:
+    - lang: Python
+      source: >
+        yellowant_user =
+        YellowAnt(access_token='sdfjbr32p89pdgDFF4p27cQd278p2DWcnp497f')
+
+        user_integration_id = 35245
+
+        profile = yellowant_user.delete_user_integration(id=user_integration_id)
   parameters:
     - name: user-integration-id
       in: path
@@ -22,6 +31,16 @@ patch:
   tags:
     - Integration
   summary: Update a User Integration
+  x-code-samples:
+    - lang: Python
+      source: >
+        yellowant_user =
+        YellowAnt(access_token='sdfjbr32p89pdgDFF4p27cQd278p2DWcnp497f')
+
+        user_integration_id = 27
+
+        profile = yellowant_user.update_user_integration(id=user_integration_id,
+        user_invoke_name="github-vader")
   parameters:
     - name: user-integration-id
       in: path

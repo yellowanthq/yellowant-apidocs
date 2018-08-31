@@ -1,0 +1,16 @@
+type: object
+properties:
+  message_text:
+    description: The text of the message
+    type: string
+    example: Text
+  requester_application:
+    description: >
+      The Id of the user integration to send this message to (that you acquired
+      duringcreate user integrationasuser_integration)
+    type: string
+    example: Application
+  attachments:
+    description: The attachments for the message (Optional)
+    allOf:
+      - $ref: '#/definitions/MessageAttachments'

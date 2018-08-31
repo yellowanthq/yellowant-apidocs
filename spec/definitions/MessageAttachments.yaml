@@ -1,0 +1,48 @@
+type: object
+properties:
+  author_icon:
+    type: string
+    example: author
+  author_link:
+    type: string
+    example: author
+  author_name:
+    type: string
+    example: author
+  color:
+    type: string
+    example: ffffff
+  footer:
+    type: string
+    example: footer
+  footer_icon:
+    type: string
+    example: footer icon
+  image url:
+    type: string
+    example: url
+  pretext:
+    type: string
+    example: pretext
+  status:
+    default: 0
+  text:
+    type: string
+    example: text
+  thumb_url:
+    type: string
+    example: url
+  title:
+    type: string
+    example: title
+  title_link:
+    type: string
+    example: url
+  ts:
+    default: 0
+  buttons:
+    allOf:
+      - $ref: '#/definitions/Button'
+  fields:
+    allOf:
+      - $ref: '#/definitions/Field'

@@ -4,12 +4,12 @@ info:
   title: YellowAnt API
   contact:
     name: YellowAnt API
-    url: 'https://www.rebilly.com/contact/'
-    email: integrations@rebilly.com
+    url: 'https://www.yellowant.com/'
+    email: vishwa@yellowant.com
   license:
-    name: Rebilly
-    url: 'https://www.rebilly.com/api/license/'
-  termsOfService: 'https://www.rebilly.com/terms/'
+    name: YellowAnt
+    url: 'https://yellowant.com/common/privacy//'
+  termsOfService: 'https://yellowant.com/common/terms/'
   x-logo:
     url: >-
       https://ya-production.s3.amazonaws.com/static/clients/dist/YellowAnt-new.png
@@ -59,3 +59,24 @@ responses:
       $ref: '#/definitions/Error'
 host: virtserver.swaggerhub.com
 basePath: /vishwa306/YellowAnt-Api/1.0.0
+tags:
+  - name: Authorization
+  - name: User
+  - name: Integration
+  - name: Messaging
+    description: >
+      # Sending messages to the User
+
+      YellowAnt allows you to send simple messages to the user in case of new
+      updates or events. There are two ways of sending a message to a user:
+
+
+      1) Simple Message - Use this message to send a normal YellowAnt message to
+      a user about any notification related to the user integration account
+
+
+      2) Webhook Message - This message is exactly like a simple message, except
+      you append data along with the message. You will need to define a Webhook
+      function in your YellowAnt application in the developer console and send
+      this message to that webhook function. A user can use a Webhook message to
+      not only notify through YellowAnt, but to also trigger an Event Workflow.

@@ -1,0 +1,13 @@
+type: object
+properties:
+  function_name:
+    type: string
+    example: function
+  data:
+    type: string
+    example: data
+  inputs:
+    example: Input
+  serviceapplications:
+    type: string
+    example: application

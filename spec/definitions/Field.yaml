@@ -1,0 +1,8 @@
+type: object
+properties:
+  short:
+    default: 1
+  title:
+    type: string
+  value:
+    type: string

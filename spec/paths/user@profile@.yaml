@@ -1,6 +1,21 @@
 get:
   tags:
     - User
+  x-code-samples:
+    - lang: Python
+      source: >
+        yellowant_user =
+        YellowAnt(access_token='sdfjbr32p89pdgDFF4p27cQd278p2DWcnp497f')
+
+        profile = yellowant_user.get_user_profile()
+
+        ​
+
+        user_id = profile['id']
+
+        user_first_name = profile['first_name']
+
+        user_last_name = profile['last_name']
   summary: Get User profile
   description: |
     Returns the profile details for the authenticated user.

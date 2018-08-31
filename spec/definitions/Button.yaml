@@ -1,0 +1,8 @@
+type: object
+properties:
+  command:
+    allOf:
+      - $ref: '#/definitions/Commands'
+  text:
+    type: string
+    example: string
