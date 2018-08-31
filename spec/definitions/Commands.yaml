@@ -11,6 +11,6 @@ properties:
     type: array
     items:
       type: string
-  serviceapplications:
+  service_application:
     type: string
     example: application
