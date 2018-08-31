@@ -8,6 +8,9 @@ properties:
     example: data
   inputs:
     example: Input
+    type: array
+    items:
+      type: string
   serviceapplications:
     type: string
     example: application

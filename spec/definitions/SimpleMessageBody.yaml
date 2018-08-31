@@ -7,7 +7,7 @@ properties:
   requester_application:
     description: >
       The Id of the user integration to send this message to (that you acquired
-      duringcreate user integrationasuser_integration)
+      during create user integrationasuser_integration)
     type: string
     example: Application
   attachments:

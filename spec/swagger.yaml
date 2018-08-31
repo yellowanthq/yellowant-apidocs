@@ -57,8 +57,8 @@ responses:
     description: Resource was not found
     schema:
       $ref: '#/definitions/Error'
-host: virtserver.swaggerhub.com
-basePath: /vishwa306/YellowAnt-Api/1.0.0
+host: api.yellowant.com
+basePath: /api
 tags:
   - name: Authorization
   - name: User

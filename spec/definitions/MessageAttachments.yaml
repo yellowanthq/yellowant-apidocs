@@ -26,6 +26,7 @@ properties:
     example: pretext
   status:
     default: 0
+    type: integer
   text:
     type: string
     example: text
@@ -40,6 +41,7 @@ properties:
     example: url
   ts:
     default: 0
+    type: integer
   buttons:
     allOf:
       - $ref: '#/definitions/Button'

@@ -2,6 +2,7 @@ type: object
 properties:
   short:
     default: 1
+    type: integer
   title:
     type: string
   value:
