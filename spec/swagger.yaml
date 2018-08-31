@@ -33,10 +33,8 @@ info:
 schemes:
   - https
 x-servers:
-  - url: //api.rebilly.com/v2.1
+  - url: //api.yellowant.com/api
     description: Live Server
-  - url: //api-sandbox.rebilly.com/v2.1
-    description: Sandbox Server
 produces:
   - application/json
 consumes:
