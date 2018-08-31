@@ -3,14 +3,22 @@ properties:
   function_name:
     type: string
     example: function
+    description: |
+      Invoke name of the function
   data:
     type: string
     example: data
+    description: |
+      data sent with the button
   inputs:
     example: Input
+    description: |
+      Input taken from the user (Optional)
     type: array
     items:
       type: string
   service_application:
     type: string
     example: application
+    description: |
+      Integration ID of the application

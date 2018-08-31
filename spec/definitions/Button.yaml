@@ -1,4 +1,6 @@
 type: object
+description: |
+  Use buttons to take actions on your notifications
 properties:
   command:
     allOf:
@@ -6,3 +8,5 @@ properties:
   text:
     type: string
     example: string
+    description: |
+      Text to be displayed on the button
