@@ -144,6 +144,7 @@ tags:
 
         ## Constructing a basic Message response 
         After processing the user command, you must respond with a message. YellowAnt messages consist of upper level formatting options along with attachments, attachment fields and attachment buttons.
+        ![](constructing_message.png)
             
         Let’s look at the structure of a YellowAnt message - it consists of the following fields:
           
@@ -151,16 +152,6 @@ tags:
         | :--- | :--- |
         | message\_text | The text of the message |
         | **attachments** | The attachments for the message \(Optional\) |
-        
-          {% codetabs name="Python", type="py" -%}
-          msg = "Hello World"
-          print msg
-          {%- language name="JavaScript", type="js" -%}
-          var msg = "Hello World";
-          console.log(msg);
-          {%- language name="HTML", type="html" -%}
-          <b>Hello World</b>
-          {%- endcodetabs %}
         
         ```python
         import json
@@ -193,10 +184,7 @@ tags:
       # Message Attachments
         Messages can also contain attachments - which are formatted as a list view within the main message.
 
-
-        
-
-        ![](../../.gitbook/assets/screenshot-api.slack.com-2018-01-28-03-51-25-409.png)
+        ![](message_attachments.png)
 
         All fields are optional. Attachments contain the following fields:
         
@@ -537,6 +525,8 @@ tags:
       # Message Buttons
 
         Message attachments can also contain interactive buttons - which are defined as an array, and displayed in a row at the bottom of the attachment area
+        
+        ![](message_buttons.png)
         
         | Field | Description |
         | :--- | :--- |
