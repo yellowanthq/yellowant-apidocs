@@ -16,6 +16,36 @@ post:
         user_intergation_id = profile['user_application']
 
         user_intergation_invoke_name = profile['user_intergation_invoke_name']
+    - lang: Javascript
+      source: >
+        module.exports.yellowantAPI = async function (req, res) {
+
+        const data = JSON.parse(req.body.data);
+
+
+        // check verification token from YA
+
+        if (data.verification_token !== process.env.YA_VERIFICATION_TOKEN) {
+          res.status(403).send("You are not authorized");
+          return;
+        }
+
+
+        const yellowantIntegrationId = data.application;
+
+        const commandName = data.function_name;
+
+        const args = data.args;
+
+
+
+        const message = await createMessage(yellowantIntegrationId, commandName,
+        args);
+
+
+        res.json(message.toJSON());
+
+        }
   responses:
     '200':
       description: User Integration Created
