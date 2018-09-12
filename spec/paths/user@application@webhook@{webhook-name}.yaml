@@ -51,10 +51,18 @@ post:
         $ref: '#/definitions/MessageBody'
   tags:
     - Messaging
-  summary: Create a webhook function message
+  summary: Create a webhook message
   description: >
-    YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
-    a YellowAnt user’s information through a token issued to your application.
+    YellowAnt allows you to send messages to the user through webhook functions
+    in case of new updates or events. The difference between simple message and
+    webhook message is that with webhook message, the user can get message, and
+    also use the data that comes along with the message in Event workflows.
+
+
+    First go to the the application page in your Developer Console. Click on
+    "Create a function". In the new function page, select the function type as
+    "Webhook". Also make sure that you upload the schema of the JSON data to the
+    Webhook function's **Output Keys**.
   responses:
     '201':
       description: Webhook was created

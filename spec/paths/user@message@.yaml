@@ -3,8 +3,10 @@ post:
     - Messaging
   summary: Create a simple message
   description: >
-    YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get
-    a YellowAnt user’s information through a token issued to your application.
+    YellowAnt allows you to send simple messages to the user in case of new
+    updates or events. This message does not contain any data and cannot be used
+    in event workflows. There is no need to declare anything in your developer
+    portal application
   x-code-samples:
     - lang: Python
       source: |
