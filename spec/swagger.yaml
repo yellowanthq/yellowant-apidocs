@@ -29,6 +29,17 @@ info:
     more from within your Slack/Teams Channels and Groups
 
 
+    Here are the SDK Links to buld your own YellowAnt integrations:
+      
+      Python: https://github.com/yellowanthq/yellowant-python-sdk
+      
+      Ruby on Rails: https://github.com/yellowanthq/yellowant-ruby-sdk
+     
+      DotNet: https://github.com/yellowanthq/yellowant-dotnet
+     
+      Javascript: https://github.com/yellowanthq/yellowant-javascript-sdk
+      
+
     <!-- ReDoc-Inject: <security-definitions> -->
 schemes:
   - https
