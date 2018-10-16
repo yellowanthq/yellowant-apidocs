@@ -1,0 +1,805 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "YellowAnt API",
+    "contact": {
+      "name": "YellowAnt API",
+      "url": "https://www.yellowant.com/",
+      "email": "vishwa@yellowant.com"
+    },
+    "license": {
+      "name": "YellowAnt",
+      "url": "https://yellowant.com/common/privacy//"
+    },
+    "termsOfService": "https://yellowant.com/common/terms/",
+    "x-logo": {
+      "url": "https://ya-production.s3.amazonaws.com/static/clients/dist/YellowAnt-new.png",
+      "backgroundColor": "#FFFFFF"
+    },
+    "description": "# Introduction\nYellowAnt is an assistant bot that gets work done. YellowAnt makes it insanely easy to manage your code repositories, track issues and tasks for the day across multiple apps like Github, Bitbucket, Trello and Asana. YellowAnt helps you respond 2X faster to new issues or tickets, restores the sanity of discussions and events around you and makes you more productive. YellowAnt is delightfully easy to use and helps you seamlessly manage your workplace apps, get regular updates and take actions through simple, intuitive text commands. YellowAnt is even more powerful in your team Slack where you can quickly take actions, generate reports, pull data and do a lot more from within your Slack/Teams Channels and Groups\n\nHere are the SDK Links to buld your own YellowAnt integrations:\n  \n  Python: https://github.com/yellowanthq/yellowant-python-sdk\n  \n  Ruby on Rails: https://github.com/yellowanthq/yellowant-ruby-sdk\n \n  DotNet: https://github.com/yellowanthq/yellowant-dotnet\n \n  Javascript: https://github.com/yellowanthq/yellowant-javascript-sdk\n  \n\n<!-- ReDoc-Inject: <security-definitions> -->\n"
+  },
+  "schemes": [
+    "https"
+  ],
+  "x-servers": [
+    {
+      "url": "//api.yellowant.com/api",
+      "description": "Live Server"
+    }
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "APIKey": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "APIKey": []
+    }
+  ],
+  "responses": {
+    "AccessForbidden": {
+      "description": "Access forbidden, invalid API-KEY was used",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "NotFound": {
+      "description": "Resource was not found",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    }
+  },
+  "host": "api.yellowant.com",
+  "basePath": "/api",
+  "tags": [
+    {
+      "name": "Authorization"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Integration"
+    },
+    {
+      "name": "Building Your Application",
+      "description": "Your YellowAnt application involves implementing three parts:\n\n1) Authenticating the user 2) Creating a user integration 3) Processing user command\n4) Responding with a Message and data 5) Implementing webhook messages(Optional)\n\n# Processing User Commands:\n\n  Remember the application, functions and arguments you created above? Now it’s Magic Time!\n  \n  Whenever a user sends a command on YellowAnt, YellowAnt parses the command string into a command object and sends your API URL the following data as a POST request:\n  \n  | Parameter | Description |\n  | :--- | :--- |\n  | user | The YellowAnt User Id |\n  | verification\\_token | The verification token assigned to your application during registration. You can use this token to verify if the request is coming from the YellowAnt servers |\n  | application | Your Application Id |\n  | application\\_invoke\\_name | The invoke name the user has assigned to your application |\n  | function | The Id of the function that the user has called. This is the same as the Id of the function you created in the developer page |\n  | event\\_type | The type of the event. Values can be`command`,`delete`,`webhook_subscription`, or`invoke_name_changed` |\n  | function\\_name | The name of the function the user has called. This is the same as the user\\_invoke\\_name of the function you created in the developer page |\n  | event | The event Id associated with the command |\n  | args | A JSON formatted argument list containing all the arguments parsed in the command that was declared by you in the developer application page |\n  \n  > SUCCESS You now have the function that the user is trying to call along with the arguments for that function. You are now ready to process that command and send a message to the user.\n  \n  ```text\n  Below is an example of a Python - Django Application View that handles an API URL request, processes the command and returns a message\n  \n  \n  # Sample POST request data to the API URL of a fictional Github application\n  {\n    \"data\":'{\n      \"user\": 4534,\n      \"verification_token\": \"bgwreASFth09243rWE134804tnb\",\n      \"application\": 5639,\n      \"application_invoke_name\": \"github-2\",\n      \"function\": 74645,\n      \"event_type\": \"command\",\n      \"function_name\": \"create_issue\",\n      \"event\": 5043867,\n      \"args\": {\n        \"repository\":\"sithlord/vader\",\n        \"title\": \"Failed running `bundle exec middleman server`\",\n        \"body\": \"I get this error when running bundle exec middleman server - /var/lib/gems/2.3.0/gems/middleman-core-4.2.1/lib/middleman-core/extensions.rb:96:in load: Tried to activate old-style extension: deploy. They are no longer supported. (RuntimeError). I am not a ruby developer so cannot find a way around this.\"\n      }\n    }\n  }\n  ```\n  \n ```python\n    import json\n    from ghApp import CommandProcessor\n    \n    #Receiving command request from the user in a Django view\n    def api_url(request):    \n          data = json.loads(request.POST[\"data\"])\n          args = data[\"args\"]\n          service_application = data[\"application\"]\n          verification_token = data['verification_token']\n          function_id = data['function']\n          function_name = data['function_name']\n    \n          if verification_token == settings.verification_token:\n            # Processing command in some class Command and sending a Message Object\n            message = CommandProcessor(function_id, service_application, args, function_name).parse()\n            # Returning message response\n            return HttpResponse(message)\n          else:\n            # Handling incorrect verification token\n            error_message = {\"message_text\":\"Incorrect Verification token\"}\n            return HttpResponse(json.dumps(error_message), content_type=\"application/json\")\n  ```\n# Constructing a Message\n\n  ## Constructing a basic Message response \n  After processing the user command, you must respond with a message. YellowAnt messages consist of upper level formatting options along with attachments, attachment fields and attachment buttons.\n  ![](constructing_message.png)\n      \n  Let’s look at the structure of a YellowAnt message - it consists of the following fields:\n    \n  | Field | Description |\n  | :--- | :--- |\n  | message\\_text | The text of the message |\n  | **attachments** | The attachments for the message \\(Optional\\) |\n  \n  ```python\n  import json\n  from yellowant.messageformat import MessageClass, MessageAttachmentsClass, MessageButtonsClass\n  \n  #Receiving command request from the user in a Django view\n  def api_url(request):    \n        data = json.loads(request.POST[\"data\"])\n        args = data[\"args\"]\n        service_application = data[\"application\"]\n        verification_token = data['verification_token']\n        function_id = data['function']\n        function_name = data['function_name']\n  \n        if verification_token == settings.verification_token:\n          # Processing command in some class Command and sending a Message Object\n          message = MessageClass()\n          message.message_text = \"I have received your command!\"\n          # Returning message response\n          return HttpResponse(message.to_json())\n  \n          # Alternatively, you can send a simple JSON response like\n          # return HttpResponse(json.dumps({\"message_text\":\"I have received your command!\"}))\n  \n        else:\n          # Handling incorrect verification token\n          error_message = {\"message_text\":\"Incorrect Verification token\"}\n          return HttpResponse(json.dumps(error_message), content_type=\"application/json\")\n  ```\n# Message Attachments\n  Messages can also contain attachments - which are formatted as a list view within the main message.\n\n  ![](message_attachments.png)\n\n  All fields are optional. Attachments contain the following fields:\n  \n  | Field\\(All optional\\) | Description |\n  | :--- | :--- |\n  | title | The title of the attachment |\n  | title\\_link | The URL that the user will be taken to on clicking the title |\n  | text | The text of the attachment |\n  | image\\_url | The URL of the image for this attachment |\n  | thumb\\_url | The URL of the thumbnail of the attachment |\n  | color | The color of the attachment text |\n  | author\\_name | The name of the author \\(if referenced in the attachment\\) |\n  | author\\_icon | The icon URL representing the author \\(if referenced in the attachment\\) |\n  | author\\_link | The link to the author \\(if referenced in the attachment\\) |\n  | footer | Footer for the attachment |\n  | footer\\_icon | The icon URL representing the footer information |\n  | pretext | A fallback text before the attachment content |\n  | ts | A Unix timestamp for the message, shown after the footer |\n  | **fields** | An array of fields to be shown below the attachment |\n  | **buttons** | An array of buttons to be showed below the attachment |\n\n  ```python\n  Sending a message with attachment response to an API URL call\n  \n  \n  import json\n  from yellowant.messageformat import MessageClass, MessageAttachmentsClass, MessageButtonsClass\n  \n  #Receiving command request from the user in a Django view\n  def api_url(request):    \n        data = json.loads(request.POST[\"data\"])\n        args = data[\"args\"]\n        service_application = data[\"application\"]\n        verification_token = data['verification_token']\n        function_id = data['function']\n        function_name = data['function_name']\n  \n        if verification_token == settings.verification_token:\n          # Processing command in some class Command and sending a Message Object\n          message = MessageClass()\n          message.message_text = \"I have received your command!\"\n  \n          attachment_1 = MessageAttachmentsClass()\n          attachment_1.title = \"This is first Attachment Title\"\n          attachment_1.title_link = \"https://http://www.github.com/lord/slate/\"\n          attachment_1.text = \"This is an attachment text\"\n          message.attach(attachment_1)\n  \n          attachment_2 = MessageAttachmentsClass()\n          attachment_2.title = \"This is second Attachment Title\"\n          attachment_2.text = \"This is the attachment text for the second attachment\"\n          message.attach(attachment_2)\n  \n  \n          # Returning message response\n          return HttpResponse(message.to_json())\n          # Alternatively, you can send a simple JSON response like\n          # return HttpResponse(json.dumps({\"message_text\":\"I have received your command!\", \"attachments\":[{\"title\":\"This is first Attachment Title\", \"title_link\":\"https://http://www.github.com/lord/slate/\", \"text\": \"This is an attachment text\"},{\"title\":\"This is second Attachment Title\", \"text\": \"This is the attachment text for the second attachment\"}]}))\n  \n        else:\n          # Handling incorrect verification token\n          error_message = {\"message_text\":\"Incorrect Verification token\"}\n          return HttpResponse(json.dumps(error_message), content_type=\"application/json\")\n  ```\n\n### Attachment Fields\n\nMessages can also contain attachments - which are formatted as a list view within the main message. All fields are optional. Attachments contain the following fields:\n\n| Field\\(All optional\\) | Description |\n| :--- | :--- |\n| title | The Title of the Field |\n| value | The value of the Field |\n| short | 0 if each field must occupy a row, 1 - if multiple fields can be displayed per row |\n  \n```text\ntasks = [{\n  \"title\":\"Bundle middleman error fix\",\n  \"body\": \"Getting this error when running bundle exec middleman server\",\n  \"status\":\"open\",\n  \"project\":\"PBL-1\",\n  \"initiator\":{\n    \"name\":\"Boo-Boo Bear\",\n    \"id\":\"463\",\n    \"url\":\"https://www.bitbucket.org/booboo/\",\n    \"image_url\":\"https://www.jellystone.com/park/bears/booboo.jpg\"\n  },\n  \"priority\":\"high\"\n},{\n  \"title\":\"Dev Branch: Links to anchor tags load H1 rather than target link\",\n  \"body\": \"I recently added static TOC/navigation to my flavor of slate and now, when an H2/H3/H4 link is loaded, it loads to the H1 anchor rather than the appropriate anchor linked.\",\n  \"status\":\"open\",\n  \"project\":\"PBL-1\",\n  \"initiator\":{\n    \"name\":\"Yogi Bear\",\n    \"id\":\"461\",\n    \"url\":\"https://www.bitbucket.org/yogi/\",\n    \"image_url\":\"https://www.jellystone.com/park/bears/yogi.jpg\"\n    },\n    \"priority\":\"low\"\n  }\n  ]\n  \n  \n  message = MessageClass()\n  message.title = \"Open JIRA tickets\"\n  message.message_text = \"Following are the open JIRA tickets for project PBL-1\"\n  \n  for task in tasks:\n    attachment = MessageAttachmentsClass()\n    attachment.title = task['title']\n    attachment.author_name = task['initiator']['name']\n    attachment.author_link = task['initiator']['url']\n    attachment.author_icon = task['initiator']['image_url']\n\n    field_status = AttachmentFieldsClass()\n    field_status.title = \"Status\"\n    field_status.value = task['status']\n    attachment.attach_field(field_status)\n\n    field_priority = AttachmentFieldsClass()\n    field_priority.title = \"Status\"\n    field_priority.value = task['status']\n    attachment.attach_field(field_priority)\n\n    message.attach(attachment)\n\n    return message.to_json()\n```\n\n## Attachment Buttons {#attachment-buttons}\n\nMessage attachments can also contain interactive buttons - which are defined as an array, and displayed in a row at the bottom of the attachment area\n\n| Field | Description |\n| :--- | :--- |\n| text | The text displayed opn the button |\n| value | The value associated with the button |\n| name | A value that helps you categorize each button into groups |\n| **command** | The command object in JSON format |\n\n### Attachment Button Commands {#attachment-button-commands}\n\nYellowAnt enables you to encode a command of your application or another third party user application\\(if the user has authorized you to encode the third party application’s commands in your application\\) inside a button. This command will point to one of your declared functions with arguments to supply to the function. When the user clicks on the button, YellowAnt will send the command object to your API URL\\(or to the third party application\\) and you can handle it in the same way you handle a regular command. You can also ask the user for input values for the command, which will be rendered as input boxes in a Dialog\n\nThe Command Object has the following format:\n\n| Field | Description |\n| :--- | :--- |\n| service\\_application | The user integration id of the application you want the button to call |\n| function\\_name | The name of the function |\n| data | A JSON representation of the function arguments. For example:`{\"repo_id\":\"skywalker\", \"issue_id\":\"469\"}` |\n| inputs | A list of arguments to ask the user as inputs within a Dialog. For example, if you want to show a dialog to get inputs for sending a mail, the inputs value will be:`[\"to\",\"body\", \"subject\"]` |\n\n Following is an example of a task management application listing details of open task tickets and providing a button to close the task for every listed task\n\n```python\nimport json\nfrom yellowant.messageformat import MessageClass, MessageAttachmentsClass, MessageButtonsClass\n\n#Importing a fictional command processor, which will process the command\nfrom project import command_processor\n\n#Receiving command request from the user in a Django view\ndef api_url(request):    \n      data = json.loads(request.POST[\"data\"])\n      args = data[\"args\"]\n      service_application = data[\"application\"]\n      verification_token = data['verification_token']\n      function_id = data['function']\n      function_name = data['function_name']\n\n      if verification_token == settings.verification_token:\n\n\n        if function_name == \"get_open_tasks\":\n          project_id = args['project']\n          # Processing command in a fictional command_processor class sending a Message Object\n          tasks = command_processor.get_open_tasks(service_application, project_id)\n\n          # The above function will return the following JSON Object of all open tasks\n          \"\"\"\n          tasks = [{\n            \"title\":\"Ability to have nested file structure \",\n            \"body\": \"We need the ability to retain our repository's nested markdown file structure. Users may either read documentation in our repository or on the doc site.\",\n            \"status\":\"open\",\n            \"project\":\"PBL-1\",\n            \"initiator\":{\n              \"name\":\"Dick Dastardly\",\n              \"id\":\"460\",\n              \"url\":\"https://www.bitbucket.org/dd/\",\n              \"image_url\":\"https://www.laffalympics.com/dd.jpg\"              \n            },\n            \"priority\":\"high\"\n          },{\n            \"title\":\"Non Latin support\",\n            \"body\": \"It appears Lunr would need a new locale file for each language we want to support. Is that correct? Just checked their documentation but could use some guidance to get started\",\n            \"project\":\"PBL-1\",\n            \"status\":\"open\",\n            \"initiator\":{\n              \"name\":\"Muttley Mutt\",\n              \"id\":\"467\",\n              \"url\":\"https://www.bitbucket.org/muttley/\",\n              \"image_url\":\"https://www.laffalympics.com/muttley.jpg\"\n            },\n            \"priority\":\"low\"\n          }]\n          \"\"\"\n\n          message = MessageClass()\n          message.title = \"Open JIRA tickets\"\n          message.message_text = \"Following are the open JIRA tickets for project PBL-1\"\n\n          for task in tasks:\n            attachment = MessageAttachmentsClass()\n            attachment.title = task['title']\n            attachment.author_name = task['initiator']['name']\n            attachment.author_link = task['initiator']['url']\n            attachment.author_icon = task['initiator']['image_url']\n\n            field_status = AttachmentFieldsClass()\n            field_status.title = \"Status\"\n            field_status.value = task['status']\n            attachment.attach_field(field_status)\n\n            field_priority = AttachmentFieldsClass()\n            field_priority.title = \"Status\"\n            field_priority.value = task['status']\n            attachment.attach_field(field_priority)\n\n            #Clicking on this button will call the close_task() function() on the application\n            button_status_close = MessageButtonsClass()\n            button_status_close.text = \"Close Ticket\"\n            button_status_close.value = \"close\"\n            button_status_close.name = \"close\"    \n\n            #We now associate the command to a command object. \n            #The 'service_application' value is the Id of the user integration you want the button to call. This can be the current user integration that is sending you this command, which we have already captured in the 'service_application' variable above. \n            #The 'service_application' can also be another user integration from a third party application, provided the user has given your application the permission to access the user's third party application. For example, the current taks management application can also add a button to one of the user's Email application integration like GMail. More on third party app permissions below\n            #The 'function_name' is the name of the function you want to call. You must define the function in the Application's Developer page.\n            #The 'data' is a dictionary of arguments to pass to the application function\n\n            button_status_close.command = {\"service_application\": self.user_integration, \"function_name\": \"close_ticket\", \n                                      \"data\": {\"id\":task['id'], \"project\": task.project}\n                                      }\n            attachment.attach_button(button_status_close)\n\n            #Clicking on this button will call the add_comment() function() on the application and prompt the user for the \"comment\" value\n            button_ticket_comment = MessageButtonsClass()\n            button_ticket_comment.text = \"Add a comment\"\n            button_ticket_comment.value = \"comment\"\n            button_ticket_comment.name = \"comment\"    \n\n            #We now associate the command to a command object. \n            #The 'service_application' value is the Id of the user integration you want the button to call. This can be the current user integration that is sending you this command, which we have already captured in the 'service_application' variable above. \n            #The 'service_application' can also be another user integration from a third party application, provided the user has given your application the permission to access the user's third party application. For example, the current taks management application can also add a button to one of the user's Email application integration like GMail. More on third party app permissions below\n            #The 'function_name' is the name of the function you want to call. In the case, we will call the add_comment function\n            #The 'data' is a dictionary of arguments to pass to the application function\n            #The 'inputs' is a list of input arguments to ask the user. This will be displayed in a Dialog with input forms. The values entered by the user will then be sent along with the data in the \"data\" values to the function_name function\n\n\n            button_status_close.command = {\"service_application\": self.user_integration, \"function_name\": \"add_comment\", \n                                      \"data\": {\"id\":task['id'], \"project\": task.project},\n                                      \"inputs\":[\"comment\"]\n                                      }\n            attachment.attach_button(button_status_close)\n\n\n\n          message.attach(attachment)\n\n          return message.to_json()\n\n        #Handling the case where the command is 'close_task', and the arguments are project and id\n        elif if function_name == \"close_task\":\n          task_id = args['id']\n          task_project = args['project']\n          # Processing command in a fictional command_processor class sending a Message Object\n          tasks = command_processor.close_task(service_application, task_project, task_id)\n          m = MessageClass()\n          m.message_Text = \"The ticket is successully closed!\"\n\n\n      else:\n        # Handling incorrect verification token\n        error_message = {\"message_text\":\"Incorrect Verification token\"}\n        return HttpResponse(json.dumps(error_message), content_type=\"application/json\")\n ```\n\n# Message Buttons\n\n  Message attachments can also contain interactive buttons - which are defined as an array, and displayed in a row at the bottom of the attachment area\n  \n  ![](message_buttons.png)\n  \n  | Field | Description |\n  | :--- | :--- |\n  | text | The text displayed opn the button |\n  | value | The value associated with the button |\n  | name | A value that helps you categorize each button into groups |\n  | **command** | The command object in JSON format |\n  \n  ## Attachment Button Commands {#attachment-button-commands}\n  \n  YellowAnt enables you to encode a command of your application or another third party user application\\(if the user has authorized you to encode the third party application’s commands in your application\\) inside a button. This command will point to one of your declared functions with arguments to supply to the function. When the user clicks on the button, YellowAnt will send the command object to your API URL\\(or to the third party application\\) and you can handle it in the same way you handle a regular command. You can also ask the user for input values for the command, which will be rendered as input boxes in a Dialog\n\n  The Command Object has the following format:\n  \n  | Field | Description |\n  | :--- | :--- |\n  | service\\_application | The user integration id of the application you want the button to call |\n  | function\\_name | The name of the function |\n  | data | A JSON representation of the function arguments. For example:`{\"repo_id\":\"skywalker\", \"issue_id\":\"469\"}` |\n  | inputs | A list of arguments to ask the user as inputs within a Dialog. For example, if you want to show a dialog to get inputs for sending a mail, the inputs value will be:`[\"to\",\"body\", \"subject\"]` |\n \n   Following is an example of a task management application listing details of open task tickets and providing a button to close the task for every listed task\n\n\n  ```python\n  import json\n  from yellowant.messageformat import MessageClass, MessageAttachmentsClass, MessageButtonsClass\n  \n  #Importing a fictional command processor, which will process the command\n  from project import command_processor\n  \n  #Receiving command request from the user in a Django view\n  def api_url(request):    \n        data = json.loads(request.POST[\"data\"])\n        args = data[\"args\"]\n        service_application = data[\"application\"]\n        verification_token = data['verification_token']\n        function_id = data['function']\n        function_name = data['function_name']\n  \n        if verification_token == settings.verification_token:\n  \n  \n          if function_name == \"get_open_tasks\":\n            project_id = args['project']\n            # Processing command in a fictional command_processor class sending a Message Object\n            tasks = command_processor.get_open_tasks(service_application, project_id)\n  \n            # The above function will return the following JSON Object of all open tasks\n            \"\"\"\n            tasks = [{\n              \"title\":\"Ability to have nested file structure \",\n              \"body\": \"We need the ability to retain our repository's nested markdown file structure. Users may either read documentation in our repository or on the doc site.\",\n              \"status\":\"open\",\n              \"project\":\"PBL-1\",\n              \"initiator\":{\n                \"name\":\"Dick Dastardly\",\n                \"id\":\"460\",\n                \"url\":\"https://www.bitbucket.org/dd/\",\n                \"image_url\":\"https://www.laffalympics.com/dd.jpg\"              \n              },\n              \"priority\":\"high\"\n            },{\n              \"title\":\"Non Latin support\",\n              \"body\": \"It appears Lunr would need a new locale file for each language we want to support. Is that correct? Just checked their documentation but could use some guidance to get started\",\n              \"project\":\"PBL-1\",\n              \"status\":\"open\",\n              \"initiator\":{\n                \"name\":\"Muttley Mutt\",\n                \"id\":\"467\",\n                \"url\":\"https://www.bitbucket.org/muttley/\",\n                \"image_url\":\"https://www.laffalympics.com/muttley.jpg\"\n              },\n              \"priority\":\"low\"\n            }]\n            \"\"\"\n  \n            message = MessageClass()\n            message.title = \"Open JIRA tickets\"\n            message.message_text = \"Following are the open JIRA tickets for project PBL-1\"\n  \n            for task in tasks:\n              attachment = MessageAttachmentsClass()\n              attachment.title = task['title']\n              attachment.author_name = task['initiator']['name']\n              attachment.author_link = task['initiator']['url']\n              attachment.author_icon = task['initiator']['image_url']\n  \n              field_status = AttachmentFieldsClass()\n              field_status.title = \"Status\"\n              field_status.value = task['status']\n              attachment.attach_field(field_status)\n  \n              field_priority = AttachmentFieldsClass()\n              field_priority.title = \"Status\"\n              field_priority.value = task['status']\n              attachment.attach_field(field_priority)\n  \n              #Clicking on this button will call the close_task() function() on the application\n              button_status_close = MessageButtonsClass()\n              button_status_close.text = \"Close Ticket\"\n              button_status_close.value = \"close\"\n              button_status_close.name = \"close\"    \n  \n              #We now associate the command to a command object. \n              #The 'service_application' value is the Id of the user integration you want the button to call. This can be the current user integration that is sending you this command, which we have already captured in the 'service_application' variable above. \n              #The 'service_application' can also be another user integration from a third party application, provided the user has given your application the permission to access the user's third party application. For example, the current taks management application can also add a button to one of the user's Email application integration like GMail. More on third party app permissions below\n              #The 'function_name' is the name of the function you want to call. You must define the function in the Application's Developer page.\n              #The 'data' is a dictionary of arguments to pass to the application function\n  \n              button_status_close.command = {\"service_application\": self.user_integration, \"function_name\": \"close_ticket\", \n                                        \"data\": {\"id\":task['id'], \"project\": task.project}\n                                        }\n              attachment.attach_button(button_status_close)\n  \n              #Clicking on this button will call the add_comment() function() on the application and prompt the user for the \"comment\" value\n              button_ticket_comment = MessageButtonsClass()\n              button_ticket_comment.text = \"Add a comment\"\n              button_ticket_comment.value = \"comment\"\n              button_ticket_comment.name = \"comment\"    \n  \n              #We now associate the command to a command object. \n              #The 'service_application' value is the Id of the user integration you want the button to call. This can be the current user integration that is sending you this command, which we have already captured in the 'service_application' variable above. \n              #The 'service_application' can also be another user integration from a third party application, provided the user has given your application the permission to access the user's third party application. For example, the current taks management application can also add a button to one of the user's Email application integration like GMail. More on third party app permissions below\n              #The 'function_name' is the name of the function you want to call. In the case, we will call the add_comment function\n              #The 'data' is a dictionary of arguments to pass to the application function\n              #The 'inputs' is a list of input arguments to ask the user. This will be displayed in a Dialog with input forms. The values entered by the user will then be sent along with the data in the \"data\" values to the function_name function\n  \n  \n              button_status_close.command = {\"service_application\": self.user_integration, \"function_name\": \"add_comment\", \n                                        \"data\": {\"id\":task['id'], \"project\": task.project},\n                                        \"inputs\":[\"comment\"]\n                                        }\n              attachment.attach_button(button_status_close)\n  \n  \n  \n            message.attach(attachment)\n  \n            return message.to_json()\n  \n          #Handling the case where the command is 'close_task', and the arguments are project and id\n          elif if function_name == \"close_task\":\n            task_id = args['id']\n            task_project = args['project']\n            # Processing command in a fictional command_processor class sending a Message Object\n            tasks = command_processor.close_task(service_application, task_project, task_id)\n            m = MessageClass()\n            m.message_Text = \"The ticket is successully closed!\"\n  \n  \n        else:\n          # Handling incorrect verification token\n          error_message = {\"message_text\":\"Incorrect Verification token\"}\n          return HttpResponse(json.dumps(error_message), content_type=\"application/json\")\n  ```\n"
+    },
+    {
+      "name": "Messaging",
+      "description": "# Sending messages to the User\nYellowAnt allows you to send simple messages to the user in case of new updates or events. There are two ways of sending a message to a user:\n\n1) Simple Message - Use this message to send a normal YellowAnt message to a user about any notification related to the user integration account\n\n2) Webhook Message - This message is exactly like a simple message, except you append data along with the message. You will need to define a Webhook function in your YellowAnt application in the developer console and send this message to that webhook function. A user can use a Webhook message to not only notify through YellowAnt, but to also trigger an Event Workflow.\n"
+    }
+  ],
+  "paths": {
+    "/oauth2/authorize/": {
+      "get": {
+        "tags": [
+          "Authorization"
+        ],
+        "summary": "Authorize User",
+        "description": "YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get a YellowAnt user’s information through a token issued to your application.\n\nTo interact with YellowAnt users, you will first need to create an Application on the YellowAnt developers page.\n\nGo to https://<your-subdomain>.yellowant.com/developers/ and Register an application. Your application will need a valid Application name, invoke_name, API URL(where we will send all user commands) and redirect URL(where we will redirect the user after the user authenticates your application).\n\n# Defining Application Functions(Commands) and their Arguments\n\nAfter creating your application, you will have to declare the functions which the user will invoke as commands. All functions have a “user_invoke_name” which, along with the application invoke name, will point to your function.\n\nYou will also need to declare the arguments to your functions so that YellowAnt can parse the necessary arguments and send to your application.\n\nThe final command, with the function name and parsed arguments will be sent to your application, along with a verification token, which is automatically created when you register your application.\n\nRedirect your users to the following URLs\n\n`GET https://www.yellowant.com/api/oauth2/authorize/`\n",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "client_id",
+            "description": "The client Id in your application developer page",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "client_secret",
+            "type": "string",
+            "description": "The client secret from your application developer page",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "grant_type",
+            "type": "string",
+            "description": "Set value to ‘authorization_code’",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "redirect_url",
+            "type": "string",
+            "description": "The url to redirect the user after authentication",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "code",
+            "type": "string",
+            "description": "The code obtained from the GET parameter",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User Authorized",
+            "schema": {
+              "$ref": "#/definitions/ClientDescription"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/AccessForbidden"
+          }
+        }
+      }
+    },
+    "/oauth2/token/": {
+      "post": {
+        "tags": [
+          "Authorization"
+        ],
+        "summary": "Get User Token",
+        "x-code-samples": [
+          {
+            "lang": "Python",
+            "source": "from yellowant import YellowAnt\n\ncode = request.GET.get('code')\nCLIENT_ID = 'oLuOCDCScer5oi9GBFWrfewei7238fFWef7c0oGNb6g5Q'\nCLIENT_SECRET = '2m89fjXkTnh87d753x4fobFFwf@3netrcSQWSusqrtRu53s'\n\ny = YellowAnt(app_key=settings.CLIENT_ID, app_secret=CLIENT_SECRET,\n                  access_token=None,\n                  redirect_uri=REDIRECT_URL)\naccess_token_dict = y.get_access_token(code)\naccess_token = access_token_dict['access_token']\n\nuser_yellowant_object = YellowAnt(access_token=access_token)\n"
+          },
+          {
+            "lang": "Javascript",
+            "source": "const uuid = require(\"uuid/v4\");\nconst sdk = require(\"yellowant-sdk\");\n\nconst models = require(\"../db/models\");\nlet {\n  YellowAntIntegration,\n  YellowAntRedirectState,\n  User\n} = models;\nconst createMessage = require(\"./CommandCenter\");\n\n/**\n * Initiate the creation of a new user integration on YA\n *\n * YA uses oauth2 as its authorization framework. This method requests for an\n * oauth2 code from YAto start creating a new user integration for this application on YA.\n */\nmodule.exports.requestYellowAntOAuthCode = async function (req, res) {\n  // get the user requesting to create a new YA integration\n  const user = req.user;\n  // generate a unique ID to identify the user when YA returns an oauth2 code\n  const state = uuid();\n\n  // save the relation between user and state so that we can identify the user\n  // when YA returns the oauth2 code\n  await YellowAntRedirectState.create({ UserId: user.id, state });\n\n  // Redirect the application user to the YA authentication page. Note that we\n  // are passing state, this app's client id, oauth response type as code, and\n  // the url to return the oauth2 code at.\n  res.redirect(`${process.env.YA_OAUTH_URL}?state=${state}&client_id=${process.env.YA_CLIENT_ID}&response_type=code&redirect_url=${process.env.YA_REDIRECT_URL}`);\n}\n\n\n/**\n * Receive the oauth2 code from YA to generate a new user integration\n *\n * This method calls utilizes the YA Python SDK to create a new user integration\n * on YA. This method only provides the code for creating a new user integration\n * on YA. Beyond that, you might need to authenticate the user on the actual\n * application (whose APIs this application will be calling) and store a\n * relation between these user auth details and the YA user integration.\n */\nmodule.exports.yellowantOAuthRedirect = async function (req, res) {\n  // oauth2 code from YA, passed as GET params in the url\n  const code = req.query.code;\n  // the unique string to identify the user for which we will create an integration\n  const state = req.query.state;\n\n  // fetch user with the help of state\n  const yellowantRedirectState = await YellowAntRedirectState.findOne({ where: { state } });\n  const user = await User.findById(yellowantRedirectState.UserId);\n\n  // init yellowant SDK client\n  const YellowAnt = sdk.Yellowant;\n  const client = new YellowAnt({\n    appKey: process.env.YA_CLIENT_ID, // App client ID from the YellowAnt Developer Console\n    appSecret: process.env.YA_CLIENT_SECRET, // App client secret from the YellowAnt Developer Console\n    redirectUri: process.env.YA_REDIRECT_URL, // App redirect URI set in the app settings page in the YellowAnt Developer Console\n  });\n  // Generate an access token for the user from the OAuth code\n  await client.getAccessToken(code); // This access token value is saved inside the client instance automatically\n\n  // Connect the user's app account with an integration on the YellowAnt platform\n  const yellowantIntegration = await client.createUserIntegration();\n\n  // Get user profile details\n  const yellowantUser = await client.getUserProfile();\n\n  // save details to db\n  await YellowAntIntegration.create({\n    UserId: user.id,\n    yellowantUserId: yellowantUser.id,\n    yellowantTeamSubdomain: yellowantUser.team.domain_name,\n    yellowantIntegrationId: yellowantIntegration.user_application,\n    yellowantIntegrationInvokeName: yellowantIntegration.user_invoke_name,\n    yellowantIntegrationToken: client.accessToken\n  });\n\n  // A new YA user integration has been created and the details have been successfully saved in\n  // your application's database. However, we have only created an integration on YA. As a\n  // developer, you need to begin an authentication process for the actual application, whose API\n  // this application is connecting to. Once, the authentication process for the actual application\n  // is completed with the user, you need to create a db entry which relates the YA user\n  // integration, we just created, with the actual application authentication details of the user.\n  // This application will then be able to identify the actual application accounts corresponding\n  // to each YA user integration.\n  res.redirect(\"/\");\n}\n"
+          }
+        ],
+        "description": "YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get a YellowAnt user’s information through a user token.\n",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "client",
+            "schema": {
+              "$ref": "#/definitions/ClientInfo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User Authorized",
+            "schema": {
+              "$ref": "#/definitions/ClientDescription"
+            }
+          },
+          "201": {
+            "description": "User Authorized",
+            "schema": {
+              "$ref": "#/definitions/ClientDescription"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/AccessForbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "422": {
+            "description": "Invalid data was sent",
+            "schema": {
+              "$ref": "#/definitions/InvalidError"
+            }
+          }
+        }
+      }
+    },
+    "/user/application/webhook/{webhook-name}": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "Python",
+            "source": "import json\n  from yellowant.messageformat import MessageClass, MessageAttachmentsClass, MessageButtonsClass\n  from yellowant import YellowAnt\n  \n  #Fetching user details and toke from DB\n  user_obj = FictionalUserDB.objects.get(user_id=435)\n  user_token = user_obj.yellowant_access_token\n  \n  #Initializing the YellowAnt User integration object with token acquired during authentication (OAuth2)\n  user_integration_object = YellowAnt(access_token = user_token)\n  \n  #Creating a message\n  message = MessageClass()\n  message.message_text = \"There is new pull request in repo argus/bolo from Perry Johnson\"\n  \n  #adding an attachment for details\n  attachment = MessageAttachmentsClass\n  attachment.title = \"Pull Request Details\"\n  \n  #adding created at field\n  field_created = AttachmentFieldsClass()\n  field_created.title = \"Created\"\n  field_created.value = \"2 hours ago\"\n  attachment.attach_field(field_created)\n  \n  #adding status at field\n  field_status = AttachmentFieldsClass()\n  field_status.title = \"Status\"\n  field_status.value = \"Pending\"\n  attachment.attach_field(field_status)\n  \n  message.attach(attachment)\n  message.data = {\"pull_request_id\":\"b547gf9ebwrioufb3\",\"repository\":\"ya-main\", \"time\":19867384, \"status\":\"pending\"}\n  \n  #Sending message to YellowAnt user integration\n  send_message = yellowant_user_integration_object.create_webhook_message(requester_application = user_integration_object.user_integration_id, webhook_name = \"some_webhook_function_invoke_name\",**message.get_dict())\n"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "webhook-name",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "webhook message",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/MessageBody"
+            }
+          }
+        ],
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Create a webhook message",
+        "description": "YellowAnt allows you to send messages to the user through webhook functions in case of new updates or events. The difference between simple message and webhook message is that with webhook message, the user can get message, and also use the data that comes along with the message in Event workflows.\n\nFirst go to the the application page in your Developer Console. Click on \"Create a function\". In the new function page, select the function type as \"Webhook\". Also make sure that you upload the schema of the JSON data to the Webhook function's **Output Keys**.\n",
+        "responses": {
+          "201": {
+            "description": "Webhook was created",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/AccessForbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "422": {
+            "description": "Invalid data was sent",
+            "schema": {
+              "$ref": "#/definitions/InvalidError"
+            }
+          }
+        }
+      }
+    },
+    "/user/integration/": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Create User Integration",
+        "description": "YellowAnt uses the OAuth 2.0 Authentication protocol which allows you to get a YellowAnt user’s information through a token issued to your application.\n",
+        "x-code-samples": [
+          {
+            "lang": "Python",
+            "source": "yellowant_user = YellowAnt(access_token='sdfjbr32p89pdgDFF4p27cQd278p2DWcnp497f')\nprofile = yellowant_user.create_user_integration()\nuser_intergation_id = profile['user_application']\nuser_intergation_invoke_name = profile['user_intergation_invoke_name']\n"
+          },
+          {
+            "lang": "Javascript",
+            "source": "module.exports.yellowantAPI = async function (req, res) {\nconst data = JSON.parse(req.body.data);\n\n// check verification token from YA\nif (data.verification_token !== process.env.YA_VERIFICATION_TOKEN) {\n  res.status(403).send(\"You are not authorized\");\n  return;\n}\n\nconst yellowantIntegrationId = data.application;\nconst commandName = data.function_name;\nconst args = data.args;\n\n\nconst message = await createMessage(yellowantIntegrationId, commandName, args);\n\nres.json(message.toJSON());\n}\n"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User Integration Created"
+          },
+          "201": {
+            "description": "User Integration Created"
+          },
+          "401": {
+            "$ref": "#/responses/AccessForbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "422": {
+            "description": "Invalid data was sent",
+            "schema": {
+              "$ref": "#/definitions/InvalidError"
+            }
+          }
+        }
+      }
+    },
+    "/user/integration/{user-integration-id}/": {
+      "delete": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Delete a User Integration",
+        "description": "Delete a user integration.\n",
+        "x-code-samples": [
+          {
+            "lang": "Python",
+            "source": "yellowant_user = YellowAnt(access_token='sdfjbr32p89pdgDFF4p27cQd278p2DWcnp497f')\nuser_integration_id = 35245\nprofile = yellowant_user.delete_user_integration(id=user_integration_id)\n"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user-integration-id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User Integration was deleted"
+          },
+          "401": {
+            "$ref": "#/responses/AccessForbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "409": {
+            "description": "Checkout page cannot be deleted"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Integration"
+        ],
+        "summary": "Update a User Integration",
+        "x-code-samples": [
+          {
+            "lang": "Python",
+            "source": "yellowant_user = YellowAnt(access_token='sdfjbr32p89pdgDFF4p27cQd278p2DWcnp497f')\nuser_integration_id = 27\nprofile = yellowant_user.update_user_integration(id=user_integration_id, user_invoke_name=\"github-vader\")\n"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user-integration-id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "user_invoke_id",
+            "in": "body",
+            "description": "The new user invoke name for the user application",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "Update a user integration.\n",
+        "responses": {
+          "204": {
+            "description": "User integration was updated",
+            "schema": {
+              "$ref": "#/definitions/InvokeName"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/AccessForbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "409": {
+            "description": "Checkout page cannot be deleted"
+          }
+        }
+      }
+    },
+    "/user/message/": {
+      "post": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Create a simple message",
+        "description": "YellowAnt allows you to send simple messages to the user in case of new updates or events. This message does not contain any data and cannot be used in event workflows. There is no need to declare anything in your developer portal application\n",
+        "x-code-samples": [
+          {
+            "lang": "Python",
+            "source": "import json\n  from yellowant.messageformat import MessageClass, MessageAttachmentsClass, MessageButtonsClass\n  from yellowant import YellowAnt\n  #Fetching user details and toke from DB\n  user_obj = FictionalUserDB.objects.get(user_id=435)\n  user_token = user_obj.yellowant_access_token\n  #Initializing the YellowAnt User integration object with token acquired during authentication (OAuth2)\n  user_integration_object = YellowAnt(access_token = user_token)\n  #Creating a message\n  message = MessageClass()\n  message.message_text = \"There is new pull request in repo argus/bolo from Perry Johnson\"\n  #adding an attachment for details\n  attachment = MessageAttachmentsClass\n  attachment.title = \"Pull Request Details\"\n  #adding created at field\n  field_created = AttachmentFieldsClass()\n  field_created.title = \"Created\"\n  field_created.value = \"2 hours ago\"\n  attachment.attach_field(field_created)\n  #adding status at field\n  field_status = AttachmentFieldsClass()\n  field_status.title = \"Status\"\n  field_status.value = \"Pending\"\n  attachment.attach_field(field_status)\n  message.attach(attachment)\n  #Sending message to YellowAnt user integration\n  send_message = yellowant_user_integration_object.add_message(requester_application = user_integration_object.user_integration_id, **message.get_dict())\n"
+          },
+          {
+            "lang": "Javascript",
+            "source": "const sdk = require(\"yellowant-sdk\");\nconst Message = sdk.Message;\nconst MessageAttachment = sdk.MessageAttachment;\nconst MessageAttachmentField = sdk.MessageAttachmentField;\n\nconst models = require(\"../db/models\");\nlet {\n  Todo,\n  YellowAntIntegration\n} = models;\n\n/**\n * createMessage\n *\n * Handles user commands\n *\n * @arg {Number} yellowantIntegrationId ID of the integration from which the command is invoked\n * @arg {String} commandName command name\n * @arg {Object} args any arguments supplementing the command\n */\nasync function createMessage(yellowantIntegrationId, commandName, args) {\n  // check whether yellowant integration exists\n  const yellowantIntegration = await YellowAntIntegration.findOne({ where: { yellowantIntegrationId } });\n  if (yellowantIntegration == null) {\n    return new Message(\"Integration does not exist\");\n  }\n\n  // check whether the command name is supported\n  if (commandsByInvokeName[commandName] == null) {\n    return new Message(\"Command does not exist, or is disabled.\");\n  }\n\n  return await commandsByInvokeName[commandName](args, yellowantIntegration);\n}\n\nconst commandsByInvokeName = {\n  \"createitem\": createItem,\n  \"getlist\": getList,\n  \"getitem\": getItem,\n  \"updateitem\": updateItem,\n  \"deleteitem\": deleteItem,\n}\n\nasync function createItem(args, yellowantIntegration) {\n  let message = new Message();\n\n  let todo = await Todo.create({\n    YellowAntIntegrationId: yellowantIntegration.UserId,\n    title: args.title,\n    description: args.description,\n  });\n\n  message.text = \"Created todo item:\";\n\n  message.addAttachment(buildTodoAttachment(todo));\n\n  return message;\n}\n\nasync function getList(args, yellowantIntegration) {\n  let message = new Message();\n\n  let todoList = await Todo.findAll({ where: { YellowAntIntegrationId: yellowantIntegration.id } });\n\n  message.text = \"Here are your todo items:\";\n  for (let todo of todoList) {\n    message.addAttachment(buildTodoAttachment(todo));\n  }\n\n  return message;\n}\n\nasync function getItem(args, yellowantIntegration) {\n  let message = new Message();\n\n  let todo = await Todo.findOne({ where: { id: args.id, YellowAntIntegrationId: yellowantIntegration.id } });\n\n  if (todo == null) {\n    message.text = \"Could not find the todo item.\"\n  } else {\n    message.text = \"Here is your todo item:\";\n    message.addAttachment(buildTodoAttachment(todo));\n  }\n\n  return message;\n}\n\nasync function updateItem(args, yellowantIntegration) {\n  let message = new Message();\n\n  let todo = await Todo.findOne({ where: { id: args.id, YellowAntIntegrationId: yellowantIntegration.id } });\n\n  if (todo == null) {\n    message.text = \"Could not find the todo item to update.\"\n  } else {\n    let title = args.title || todo.title;\n    let description = args.description || todo.description;\n\n    await todo.update({ title, description });\n\n    message.text = \"Here is your updated todo item:\";\n    message.addAttachment(buildTodoAttachment(todo));\n  }\n\n  return message;\n}\n\nasync function deleteItem(args, yellowantIntegration) {\n  let message = new Message();\n\n  let todo = await Todo.findOne({ where: { id: args.id, YellowAntIntegrationId: yellowantIntegration.id } });\n\n  if (todo == null) {\n    message.text = \"Could not find the todo item to delete.\"\n  } else {\n    await todo.destroy({ force: true });\n\n    let todoList = await Todo.findAll({ where: { YellowAntIntegrationId: yellowantIntegration.id } });\n\n    message.text = \"Deleted item. Here are your remaining todo items:\";\n    for (let todo of todoList) {\n      message.addAttachment(buildTodoAttachment(todo));\n    }\n  }\n\n  return message;\n}\n\n\nfunction buildTodoAttachment(todo) {\n  let attachment = new MessageAttachment({\n    title: todo.title,\n    text: todo.description\n  });\n\n  let field = new MessageAttachmentField({\n    title: \"ID\",\n    value: todo.id\n  });\n\n  attachment.addField(field);\n\n  return attachment;\n}\n\nmodule.exports = createMessage;\n"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "simple message body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/SimpleMessageBody"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Simple Message created",
+            "schema": {
+              "$ref": "#/definitions/SimpleMessage"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/AccessForbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "422": {
+            "description": "Invalid data was sent",
+            "schema": {
+              "$ref": "#/definitions/InvalidError"
+            }
+          }
+        }
+      }
+    },
+    "/user/profile/": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "Python",
+            "source": "yellowant_user = YellowAnt(access_token='sdfjbr32p89pdgDFF4p27cQd278p2DWcnp497f')\nprofile = yellowant_user.get_user_profile()\n​\nuser_id = profile['id']\nuser_first_name = profile['first_name']\nuser_last_name = profile['last_name']\n"
+          }
+        ],
+        "summary": "Get User profile",
+        "description": "Returns the profile details for the authenticated user.\n",
+        "responses": {
+          "200": {
+            "description": "User Profile was retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/UserProfile"
+            }
+          },
+          "401": {
+            "$ref": "#/responses/AccessForbidden"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Button": {
+      "type": "object",
+      "description": "Use buttons to take actions on your notifications\n",
+      "properties": {
+        "command": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Commands"
+            }
+          ]
+        },
+        "text": {
+          "type": "string",
+          "example": "string",
+          "description": "Text to be displayed on the button\n"
+        }
+      }
+    },
+    "ClientDescription": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string",
+          "example": "B69$9v7v68ydepiuXheTodDWDc33rVYXEviT4d3d"
+        },
+        "expires": {
+          "type": "string",
+          "example": 31536000
+        },
+        "refresh_token": {
+          "type": "string",
+          "example": "ei7238fFWef7c0oGNb6gd34n087xb390yx8b4x8"
+        }
+      }
+    },
+    "ClientInfo": {
+      "type": "object",
+      "properties": {
+        "client_id": {
+          "description": "The client Id in your application developer page",
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string",
+          "description": "The client secret from your application developer page"
+        },
+        "grant_type": {
+          "type": "string",
+          "description": "Set value to ‘authorization_code’"
+        },
+        "redirect_url": {
+          "type": "string",
+          "description": "The url to redirect the user after authentication"
+        },
+        "code": {
+          "type": "string",
+          "description": "The code obtained from the GET parameter"
+        }
+      }
+    },
+    "Commands": {
+      "type": "object",
+      "properties": {
+        "function_name": {
+          "type": "string",
+          "example": "function",
+          "description": "Invoke name of the function\n"
+        },
+        "data": {
+          "type": "string",
+          "example": "data",
+          "description": "data sent with the button\n"
+        },
+        "inputs": {
+          "example": "Input",
+          "description": "Input taken from the user (Optional)\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "service_application": {
+          "type": "string",
+          "example": "application",
+          "description": "Integration ID of the application\n"
+        }
+      }
+    },
+    "InvalidError": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Error"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "details": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 600
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "Field": {
+      "type": "object",
+      "properties": {
+        "short": {
+          "default": 1,
+          "type": "integer",
+          "description": "An optional flag indicating whether the value is short enough to be displayed side-by-side with other values.\n"
+        },
+        "title": {
+          "type": "string",
+          "description": "Shown as a bold heading above the value text. It cannot contain markup and will be escaped for you.\n"
+        },
+        "value": {
+          "type": "string",
+          "description": "The text value of the field. It may contain standard message markup and must be escaped as normal. May be multi-line.\n"
+        }
+      }
+    },
+    "InvokeName": {
+      "type": "object",
+      "properties": {
+        "application": {
+          "example": 5,
+          "type": "integer"
+        },
+        "user_invoke_name": {
+          "example": "github_vader",
+          "type": "string"
+        },
+        "user_application": {
+          "example": 133,
+          "type": "integer"
+        }
+      }
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "example": "ok",
+          "type": "string"
+        }
+      }
+    },
+    "MessageAttachments": {
+      "type": "object",
+      "properties": {
+        "author_icon": {
+          "type": "string",
+          "example": "author",
+          "description": "A valid URL that displays a small 16x16px image to the left of the author_name text. Will only work if author_name is present\n"
+        },
+        "author_link": {
+          "type": "string",
+          "example": "author",
+          "description": "A valid URL that will hyperlink the author_name text mentioned above. Will only work if author_name is present. \n"
+        },
+        "author_name": {
+          "type": "string",
+          "example": "author",
+          "description": "Small text used to display the author's name.\n"
+        },
+        "color": {
+          "type": "string",
+          "example": "ffffff",
+          "description": "Like traffic signals, color-coding messages can quickly communicate intent and help separate them from the flow of other messages in the timeline.\n\n  An optional value that can either be one of good, warning, danger, or any hex color code (eg. #439FE0). This value is used to color the border along the left side of the message attachment.\n"
+        },
+        "footer": {
+          "type": "string",
+          "example": "footer",
+          "description": "Add some brief text to help contextualize and identify an attachment. Limited to 300 characters, and may be truncated further when displayed to users in environments with limited screen real estate\n"
+        },
+        "footer_icon": {
+          "type": "string",
+          "example": "footer icon",
+          "description": "To render a small icon beside your footer text, provide a publicly accessible URL string in the footer_icon field. You must also provide a footer for the field to be recognized.\n\nWe'll render what you provide at 16px by 16px. It's best to use an image that is similarly sized.\n"
+        },
+        "image url": {
+          "type": "string",
+          "example": "url",
+          "description": "A valid URL to an image file that will be displayed inside a message attachment. We currently support the following formats: GIF, JPEG, PNG, and BMP.\n\nLarge images will be resized to a maximum width of 360px or a maximum height of 500px, while still maintaining the original aspect ratio.\n"
+        },
+        "pretext": {
+          "type": "string",
+          "example": "pretext",
+          "description": "This is optional text that appears above the message attachment block.\n"
+        },
+        "status": {
+          "default": 0,
+          "type": "integer"
+        },
+        "text": {
+          "type": "string",
+          "example": "text",
+          "description": "This is the main text in a message attachment, and can contain standard message markup. The content will automatically collapse if it contains 700+ characters or 5+ linebreaks, and will display a \"Show more...\" link to expand the content. Links posted in the text field will not unfurl\n"
+        },
+        "thumb_url": {
+          "type": "string",
+          "example": "url",
+          "description": "A valid URL to an image file that will be displayed as a thumbnail on the right side of a message attachment. We currently support the following formats: GIF, JPEG, PNG, and BMP.\n\n  The thumbnail's longest dimension will be scaled down to 75px while maintaining the aspect ratio of the image. The filesize of the image must also be less than 500 KB.\n  \n  For best results, please use images that are already 75px by 75px.\n"
+        },
+        "title": {
+          "type": "string",
+          "example": "title",
+          "description": "The title is displayed as larger, bold text near the top of a message attachment. By passing a valid URL in the title_link parameter (optional), the title text will be hyperlinked.\n"
+        },
+        "title_link": {
+          "type": "string",
+          "example": "url",
+          "description": "The title is displayed as larger, bold text near the top of a message attachment. By passing a valid URL in the title_link parameter (optional), the title text will be hyperlinked.\n"
+        },
+        "ts": {
+          "default": 0,
+          "type": "integer",
+          "description": "Does your attachment relate to something happening at a specific time?\n\nBy providing the ts field with an integer value in \"epoch time\", the attachment will display an additional timestamp value as part of the attachment's footer.\n\nUse ts when referencing articles or happenings. Your message's timestamp will be displayed in varying ways, depending on how far in the past or future it is, relative to the present. Form factors, like mobile versus desktop may also transform its rendered appearance.\n\nExample: Providing 123456789 would result in a rendered timestamp of Nov 29th, 1973. If it were currently 1973, the year might be trimmed off. If it were only a few days ago, we might display also display the time of day, like 9:33pm.\n"
+        },
+        "buttons": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Button"
+            }
+          ]
+        },
+        "fields": {
+          "description": "Fields are defined as an array. Each entry in the array is a single field. Each field is defined as a dictionary with key-value pairs. Fields get displayed in a table-like way. See the below example.\n\n  For best results, include no more than 2-3 key/value pairs. There is no optimal, programmatic way to display a greater amount of tabular data.\n",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Field"
+            }
+          ]
+        }
+      }
+    },
+    "MessageBody": {
+      "type": "object",
+      "properties": {
+        "message_text": {
+          "description": "The text of the message",
+          "type": "string",
+          "example": "Text"
+        },
+        "requester_application": {
+          "description": "The Id of the user integration to send this message to (that you acquired duringcreate user integrationasuser_integration)\n",
+          "type": "string",
+          "example": "Application"
+        },
+        "attachments": {
+          "description": "The attachments for the message (Optional)",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MessageAttachments"
+            }
+          ]
+        },
+        "data": {
+          "description": "The data along with the message. The output schema must be defined in developer application page for the webhook function (Optional)\n",
+          "type": "string"
+        }
+      }
+    },
+    "SimpleMessage": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "example": "ok",
+          "type": "string"
+        }
+      }
+    },
+    "SimpleMessageBody": {
+      "type": "object",
+      "properties": {
+        "message_text": {
+          "description": "The text of the message",
+          "type": "string",
+          "example": "Text"
+        },
+        "requester_application": {
+          "description": "The Id of the user integration to send this message to (that you acquired during create user integrationasuser_integration)\n",
+          "type": "string",
+          "example": "Application"
+        },
+        "attachments": {
+          "description": "The attachments for the message (Optional)",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MessageAttachments"
+            }
+          ]
+        }
+      }
+    },
+    "Style": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "description": "Background color for the section in hexadecimal format.",
+          "type": "string",
+          "maxLength": 6,
+          "default": "ffffff"
+        },
+        "color": {
+          "description": "Font color for the section in hexadecimal format.",
+          "type": "string",
+          "maxLength": 6,
+          "default": "37474F"
+        }
+      }
+    },
+    "UserProfile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 11
+        },
+        "username": {
+          "type": "string",
+          "example": "h74d-r34f-4dsf-2drw-4r2ed"
+        },
+        "firstname": {
+          "type": "string",
+          "example": "Jane"
+        },
+        "lastname": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "is_active": {
+          "type": "boolean",
+          "example": true
+        },
+        "email": {
+          "type": "string",
+          "example": "jane_doe@example.com"
+        }
+      }
+    }
+  }
+}
